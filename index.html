@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="./pdftex.js"></script>
+    <style>
+      textarea {
+        width: 100%;
+        height: 500px;
+      }
+    </style>
+  </head>
+  <body>
+    <textarea>
+\documentclass[12pt]{article}
+\usepackage{amsmath}
+\usepackage{graphicx}
+
+\title{pdftex.js}
+\author{Compile \TeX{} directly in your browser!}
+\date{\today}
+\begin{document}
+  \maketitle
+
+  \begin{center}
+    \includegraphics[width=0.5\textwidth]{https://assets-cdn.github.com/images/modules/logos_page/Octocat.png}
+  \end{center}
+
+  \begin{align}
+    E_0 &= mc^2    \\
+    E &= \frac{mc^2}{\sqrt{1-\frac{v^2}{c^2}}}
+  \end{align}
+\end{document}
+    </textarea>
+    <button onclick="compile()">Compile!</button>
+    <a></a>
+    <script>
+      function compile () {
+        var source = document.querySelector('textarea').value
+        var compile = pdftex(source, { debug: true })
+        compile.on('finish', function (event) {
+          if (event.success) {
+            var a = document.querySelector('a')
+            a.textContent = event.url
+            a.setAttribute('href', event.url)
+          }
+        })
+      }
+    </script>
+  </body>
+</html>
+

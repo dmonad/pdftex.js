@@ -1,0 +1,31 @@
+{
+  "name": "pdftex.js",
+  "version": "0.0.22",
+  "description": "pdftex in pure js",
+  "main": "src/pdftex.js",
+  "dependencies": {},
+  "devDependencies": {
+    "babel-plugin-external-helpers": "^6.18.0",
+    "babel-preset-es2015": "^6.18.0",
+    "concurrently": "^3.1.0",
+    "release-it": "^2.5.3",
+    "rollup": "^0.40.2",
+    "rollup-plugin-babel": "^2.7.1",
+    "rollup-plugin-uglify": "^1.0.1",
+    "rollup-watch": "^3.2.1"
+  },
+  "scripts": {
+    "dist-worker": "cd src && make dist",
+    "develop": "concurrently -k \"rollup src/pdftex.js -o pdftex.js -f umd -w -m -n pdftex\" \"http-server\"",
+    "dist": "npm run dist-worker && rollup src/pdftex.js -o pdftex.js -f umd -m -c -n pdftex",
+    "publish": "release-it"
+  },
+  "keywords": [
+    "pdftex",
+    "latex",
+    "texlive",
+    "tex"
+  ],
+  "author": "Kevin Jahns <kevin.jahns@rwth-aachen.de>",
+  "license": "MIT"
+}

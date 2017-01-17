@@ -1,0 +1,48 @@
+{
+    "non-interactive": true,
+    "dry-run": false,
+    "verbose": true,
+    "pkgFiles": ["package.json"],
+    "increment": "patch",
+    "commitMessage": "Release %s",
+    "tagName": "%s",
+    "tagAnnotation": "Release %s",
+    "buildCommand": false,
+    "changelogCommand": "git log --pretty=format:'* %s (%h)' [REV_RANGE]",
+    "requireCleanWorkingDir": false,
+    "src": {
+        "pushRepo": null,
+        "beforeStartCommand": "npm run dist",
+        "beforeStageCommand": false,
+        "afterReleaseCommand": false
+    },
+    "dist": {
+        "repo": "git@github.com:ez-tools/_test2#dist",
+        "baseDir": ".",
+        "stageDir": ".stage",
+        "files": [
+          "README.md",
+          "pdftex.js*",
+          "package.json",
+          "example.html",
+          "bower.json",
+          "./src/pdftex-worker.js*",
+          "src/texlive/**"
+        ],
+        "pkgFiles": null,
+        "beforeStageCommand": "",
+        "afterReleaseCommand": ""
+    },
+    "npm": {
+        "publish": false,
+        "publishPath": ".stage",
+        "tag": "latest",
+        "private": false,
+        "forcePublishSourceRepo": false
+    },
+    "github": {
+        "release": false,
+        "releaseName": "Release %s",
+        "tokenRef": "GITHUB_TOKEN"
+    }
+}
