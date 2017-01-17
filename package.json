@@ -1,6 +1,6 @@
 {
   "name": "pdftex.js",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "pdftex in pure js",
   "main": "src/pdftex.js",
   "dependencies": {},
