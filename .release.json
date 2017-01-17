@@ -22,6 +22,7 @@
         "stageDir": ".stage",
         "files": [
           "README.md",
+          "LICENSE",
           "pdftex.js*",
           "package.json",
           "example.html",
