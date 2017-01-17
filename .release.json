@@ -17,12 +17,11 @@
         "afterReleaseCommand": false
     },
     "dist": {
-        "repo": "git@github.com:ez-tools/_test2#dist",
+        "repo": "git@github.com:dmonad/pdftex.js#dist",
         "baseDir": ".",
         "stageDir": ".stage",
         "files": [
           "README.md",
-          "LICENSE",
           "pdftex.js*",
           "package.json",
           "example.html",
