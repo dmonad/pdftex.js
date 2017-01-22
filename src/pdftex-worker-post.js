@@ -27,7 +27,7 @@ function wrap (name) {
         if (p[0] !== '/') {
           p = '/' + p
         }
-        Module.FS_createLazyFile(p, filename, '/src/texlive' + path, true, true)
+        Module.FS_createLazyFile(p, filename, '/texlive' + path, true, true)
         res = f.apply(this, arguments)
       } else {
         throw err

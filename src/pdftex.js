@@ -2,7 +2,7 @@
 class PdfTeXCompilation {
   constructor () {
     this._ready = false
-    this.worker = new Worker('./src/pdftex-worker.js') // TODO: move to server
+    this.worker = new Worker('./pdftex-worker.js')
     this.ready = false
     var self = this
 

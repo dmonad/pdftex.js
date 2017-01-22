@@ -8,42 +8,44 @@ BASE_TEXLIVE_URL=http://mirrors.ctan.org/macros/latex/base.zip
 SHELL=bash
 all: pdftex-worker.js
 
-pdftex-1.40.11.zip:
-	wget $(PDFTEX_URL)
+build/pdftex-1.40.11.zip:
+	mkdir -p build
+	cd build && wget $(PDFTEX_URL)
 
-install-tl-unx.tar.gz:
-	wget http://mirror.ctan.org/systems/texlive/tlnet/install-tl-unx.tar.gz
+./build/install-tl-unx.tar.gz:
+	mkdir -p build
+	cd build && wget http://mirror.ctan.org/systems/texlive/tlnet/install-tl-unx.tar.gz
 
-pdftex-1.40.11: pdftex-1.40.11.zip
-	unzip -o pdftex-1.40.11.zip
+./build/pdftex-1.40.11: ./build/pdftex-1.40.11.zip
+	unzip -o build/pdftex-1.40.11.zip -d build
 
-binary/pdftex-1.40.11: pdftex-1.40.11.zip
-	mkdir -p binary
-	unzip -o pdftex-1.40.11.zip -d binary
+./build/binary/pdftex-1.40.11: ./build/pdftex-1.40.11.zip
+	mkdir -p build/binary
+	unzip -o build/pdftex-1.40.11.zip -d build/binary
 
-configure: pdftex-1.40.11
-	-@cd ${SOURCE_DIR} && \
+configure: ./build/pdftex-1.40.11
+	-@cd build/${SOURCE_DIR} && \
 	EMCONFIGURE_JS=0 emconfigure ./build-pdftex.sh -C \
 		--disable-all-pkgs \
 		--enable-pdftex \
 		--enable-static \
 		CC=emcc CFLAGS=-DELIDE_CODE
 
-texlive-files.js: ./texlive/texmf-var/web2c/pdftex/latex.fmt ./texlive
-	echo 'var texliveFiles = [' > texlive-files.js
-	find texlive -type d -exec echo \'{}/.\', \; | sed "s/^'texlive/'/g" >> texlive-files.js
-	find texlive -type f -exec echo \'{}\', \; | sed "s/^'texlive/'/g" >> texlive-files.js
-	echo ']' >> texlive-files.js
+./build/texlive-files.js: ./texlive/texmf-var/web2c/pdftex/latex.fmt ./texlive
+	echo 'var texliveFiles = [' > build/texlive-files.js
+	find texlive -type d -exec echo \'{}/.\', \; | sed "s/^'texlive/'/g" >> build/texlive-files.js
+	find texlive -type f -exec echo \'{}\', \; | sed "s/^'texlive/'/g" >> build/texlive-files.js
+	echo ']' >> build/texlive-files.js
 
-./binary/${SOURCE_DIR}/build-pdftex/texk/web2c/pdftex: binary/pdftex-1.40.11
-	cd binary && cd ${SOURCE_DIR} && ./build-pdftex.sh -C \
+./build/binary/${SOURCE_DIR}/build-pdftex/texk/web2c/pdftex: ./build/binary/pdftex-1.40.11
+	cd build/binary/${SOURCE_DIR} && ./build-pdftex.sh -C \
 		--disable-all-pkgs \
 		--enable-pdftex \
 		--enable-static
 
-./texlive: install-tl-unx.tar.gz
+./texlive: ./build/install-tl-unx.tar.gz
 	mkdir -p texlive
-	cd texlive && tar xzvf ../install-tl-unx.tar.gz
+	cd texlive && tar xzvf ../build/install-tl-unx.tar.gz
 	echo selected_scheme scheme-basic > texlive/profile.input
 	echo TEXDIR `pwd`/texlive >> texlive/profile.input
 	echo TEXMFLOCAL `pwd`/texlive/texmf-local >> texlive/profile.input
@@ -53,76 +55,68 @@ texlive-files.js: ./texlive/texmf-var/web2c/pdftex/latex.fmt ./texlive
 	cd texlive && ./install-tl-*/install-tl -profile profile.input
 	cd texlive && rm -rf bin readme* tlpkg install* *.html texmf-dist/doc texmf-var/web2c
 
-./latex_format/base.zip:
-	mkdir -p latex_format
-	cd latex_format && wget ${BASE_TEXLIVE_URL} && unzip -o base.zip
+./build/latex_format/base.zip:
+	mkdir -p build/latex_format
+	cd build/latex_format && wget ${BASE_TEXLIVE_URL} && unzip -o base.zip
 
-./texlive/texmf-var/web2c/pdftex/latex.fmt: ./latex_format/base.zip ./binary/${SOURCE_DIR}/build-pdftex/texk/web2c/pdftex ./texlive
-	mkdir -p latex_format
-	cd latex_format && unzip -o base.zip
-	cd latex_format/base && ../../binary/${SOURCE_DIR}/build-pdftex/texk/web2c/pdftex -ini -etex unpack.ins
-	touch latex_format/base/hyphen.cfg
-	cd latex_format/base && ../../binary/${SOURCE_DIR}/build-pdftex/texk/web2c/pdftex -ini -etex latex.ltx
-	mkdir -p ./texlive/texmf-var/web2c/pdftex/
-	cp latex_format/base/latex.fmt ./texlive/texmf-var/web2c/pdftex/
+./texlive/texmf-var/web2c/pdftex/latex.fmt: ./build/latex_format/base.zip ./build/binary/${SOURCE_DIR}/build-pdftex/texk/web2c/pdftex ./texlive
+	cd build/latex_format && unzip -o base.zip
+	cd build/latex_format/base && ../../binary/${SOURCE_DIR}/build-pdftex/texk/web2c/pdftex -ini -etex unpack.ins
+	touch build/latex_format/base/hyphen.cfg
+	cd build/latex_format/base && ../../binary/${SOURCE_DIR}/build-pdftex/texk/web2c/pdftex -ini -etex latex.ltx
+	mkdir -p texlive/texmf-var/web2c/pdftex/
+	cp build/latex_format/base/latex.fmt ./texlive/texmf-var/web2c/pdftex/
 
-./${SOURCE_DIR}/src/texk/kpathsea/texmf.cnf: ./texlive
-	find texlive -mindepth 2 -name texmf.cnf -exec cp {} ./${SOURCE_DIR}/src/texk/kpathsea \;
+./build/${SOURCE_DIR}/src/texk/kpathsea/texmf.cnf: ./texlive
+	find ./texlive -mindepth 2 -name texmf.cnf -exec cp {} build/${SOURCE_DIR}/src/texk/kpathsea \;
 
-compile_bc: ./binary/${SOURCE_DIR}/build-pdftex/texk/web2c/pdftex configure ./${SOURCE_DIR}/src/texk/kpathsea/texmf.cnf
-	cp ./binary/${SOURCE_DIR}/build-pdftex/texk/web2c/web2c/{fixwrites,web2c,splitup} ${SOURCE_DIR}/build-pdftex/texk/web2c/web2c/
-	chmod +x ${SOURCE_DIR}/build-pdftex/texk/web2c/web2c/fixwrites
-	chmod +x ${SOURCE_DIR}/build-pdftex/texk/web2c/web2c/web2c
-	chmod +x ${SOURCE_DIR}/build-pdftex/texk/web2c/web2c/splitup
+compile_bc: ./build/binary/${SOURCE_DIR}/build-pdftex/texk/web2c/pdftex configure ./build/${SOURCE_DIR}/src/texk/kpathsea/texmf.cnf
+	cp build/binary/${SOURCE_DIR}/build-pdftex/texk/web2c/web2c/{fixwrites,web2c,splitup} build/${SOURCE_DIR}/build-pdftex/texk/web2c/web2c/
+	chmod +x build/${SOURCE_DIR}/build-pdftex/texk/web2c/web2c/fixwrites
+	chmod +x build/${SOURCE_DIR}/build-pdftex/texk/web2c/web2c/web2c
+	chmod +x build/${SOURCE_DIR}/build-pdftex/texk/web2c/web2c/splitup
 
-	cp ./binary/${SOURCE_DIR}/build-pdftex/texk/web2c/{ctangle,tangle,tie,pdftex-pool.c} ${SOURCE_DIR}/build-pdftex/texk/web2c/
-	chmod +x ${SOURCE_DIR}/build-pdftex/texk/web2c/ctangle
-	chmod +x ${SOURCE_DIR}/build-pdftex/texk/web2c/tie
-	chmod +x ${SOURCE_DIR}/build-pdftex/texk/web2c/tangle
+	cp build/binary/${SOURCE_DIR}/build-pdftex/texk/web2c/{ctangle,tangle,tie,pdftex-pool.c} build/${SOURCE_DIR}/build-pdftex/texk/web2c/
+	chmod +x build/${SOURCE_DIR}/build-pdftex/texk/web2c/ctangle
+	chmod +x build/${SOURCE_DIR}/build-pdftex/texk/web2c/tie
+	chmod +x build/${SOURCE_DIR}/build-pdftex/texk/web2c/tangle
 
-	-cd ${SOURCE_DIR}/build-pdftex/texk/web2c && emmake make pdftex  -o tangle -o tie -o web2c -o pdftex-pool.c
+	-cd build/${SOURCE_DIR}/build-pdftex/texk/web2c && emmake make pdftex  -o tangle -o tie -o web2c -o pdftex-pool.c
 
 compile_kpathsea: configure
-	-cd ${SOURCE_DIR}/build-pdftex/texk/kpathsea && make clean
-	-cd ${SOURCE_DIR}/build-pdftex/texk/kpathsea && emmake make CC=emcc CFLAGS=-DELIDE_CODE
+	-cd build/${SOURCE_DIR}/build-pdftex/texk/kpathsea && make clean
+	-cd build/${SOURCE_DIR}/build-pdftex/texk/kpathsea && emmake make CC=emcc CFLAGS=-DELIDE_CODE
 
 compile_lib: configure
-	-cd ${SOURCE_DIR}/build-pdftex/texk/web2c/lib && make clean
-	-cd ${SOURCE_DIR}/build-pdftex/texk/web2c/lib && emmake make CC=emcc CFLAGS=-DELIDE_CODE
+	-cd build/${SOURCE_DIR}/build-pdftex/texk/web2c/lib && make clean
+	-cd build/${SOURCE_DIR}/build-pdftex/texk/web2c/lib && emmake make CC=emcc CFLAGS=-DELIDE_CODE
 
-pdftex-worker.js: compile_bc compile_lib compile_kpathsea texlive-files.js
-	cat texlive-files.js > tmp.js
-	cat pdftex-worker-pre.js >> tmp.js
-	opt -strip-debug ${SOURCE_DIR}/build-pdftex/texk/web2c/pdftex >pdftex.bc
-	OBJFILES=$$(for i in `find ${SOURCE_DIR}/build-pdftex/texk/web2c/lib ${SOURCE_DIR}/build-pdftex/texk/kpathsea -name '*.o'` ; do llvm-nm $$i | grep main >/dev/null || echo $$i ; done) && \
-		emcc -s INVOKE_RUN=0 --memory-init-file 1 -v --closure 0 -s TOTAL_MEMORY=67108864 -s FORCE_FILESYSTEM=1 $$OBJFILES pdftex.bc -o pdftex-worker.js --post-js pdftex-worker-post.js --pre-js tmp.js -O3
-#		emcc -v --minify 0 --closure 0 -s FS_LOG=1 -s TOTAL_MEMORY=67108864 -O2 -g3 $$OBJFILES pdftex.bc -s INVOKE_RUN=0 --pre-js pre.js --post-js post.js -o pdftex-worker-generated.js
-	rm tmp.js
+./pdftex-worker.js: compile_bc compile_lib compile_kpathsea build/texlive-files.js
+	cat build/texlive-files.js > build/tmp.js
+	cat src/pdftex-worker-pre.js >> build/tmp.js
+	opt -strip-debug build/${SOURCE_DIR}/build-pdftex/texk/web2c/pdftex > build/pdftex.bc
+	OBJFILES=$$(for i in `find build/${SOURCE_DIR}/build-pdftex/texk/web2c/lib build/${SOURCE_DIR}/build-pdftex/texk/kpathsea -name '*.o'` ; do llvm-nm $$i | grep main >/dev/null || echo $$i ; done) && \
+		emcc -s INVOKE_RUN=0 --memory-init-file 1 -v --closure 0 -s TOTAL_MEMORY=67108864 -s FORCE_FILESYSTEM=1 $$OBJFILES build/pdftex.bc -o pdftex-worker.js --post-js src/pdftex-worker-post.js --pre-js build/tmp.js -O3
+	rm build/tmp.js
 
 dist:
-	cat texlive-files.js > tmp.js
-	cat pdftex-worker-pre.js >> tmp.js
-	OBJFILES=$$(for i in `find ${SOURCE_DIR}/build-pdftex/texk/web2c/lib ${SOURCE_DIR}/build-pdftex/texk/kpathsea -name '*.o'` ; do llvm-nm $$i | grep main >/dev/null || echo $$i ; done) && \
-		emcc -s INVOKE_RUN=0 --memory-init-file 1 -v --closure 0 -s TOTAL_MEMORY=67108864 -s FORCE_FILESYSTEM=1 $$OBJFILES pdftex.bc -o pdftex-worker.js --post-js pdftex-worker-post.js --pre-js tmp.js -O3
-	rm tmp.js
+	cat build/texlive-files.js > build/tmp.js
+	cat src/pdftex-worker-pre.js >> build/tmp.js
+	OBJFILES=$$(for i in `find build/${SOURCE_DIR}/build-pdftex/texk/web2c/lib build/${SOURCE_DIR}/build-pdftex/texk/kpathsea -name '*.o'` ; do llvm-nm $$i | grep main >/dev/null || echo $$i ; done) && \
+		emcc -s INVOKE_RUN=0 --memory-init-file 1 -v --closure 0 -s TOTAL_MEMORY=67108864 -s FORCE_FILESYSTEM=1 $$OBJFILES build/pdftex.bc -o pdftex-worker.js --post-js src/pdftex-worker-post.js --pre-js build/tmp.js -O3
+	rm build/tmp.js
 
 dev:
-	cat texlive-files.js > tmp.js
-	cat pdftex-worker-pre.js >> tmp.js
-	OBJFILES=$$(for i in `find ${SOURCE_DIR}/build-pdftex/texk/web2c/lib ${SOURCE_DIR}/build-pdftex/texk/kpathsea -name '*.o'` ; do llvm-nm $$i | grep main >/dev/null || echo $$i ; done) && \
-		emcc -s INVOKE_RUN=0 --memory-init-file 1 -v --closure 0 -s TOTAL_MEMORY=67108864 -s FORCE_FILESYSTEM=1 $$OBJFILES pdftex.bc -o pdftex-worker.js --post-js pdftex-worker-post.js --pre-js tmp.js # -O3
-	rm tmp.js
+	cat build/texlive-files.js > build/tmp.js
+	cat src/pdftex-worker-pre.js >> build/tmp.js
+	OBJFILES=$$(for i in `find build/${SOURCE_DIR}/build-pdftex/texk/web2c/lib build/${SOURCE_DIR}/build-pdftex/texk/kpathsea -name '*.o'` ; do llvm-nm $$i | grep main >/dev/null || echo $$i ; done) && \
+		emcc -s INVOKE_RUN=0 --memory-init-file 1 -v --closure 0 -s TOTAL_MEMORY=67108864 -s FORCE_FILESYSTEM=1 $$OBJFILES build/pdftex.bc -o pdftex-worker.js --post-js src/pdftex-worker-post.js --pre-js build/tmp.js # -O3
+	rm build/tmp.js
 
 clean:
-	rm -f pdftex-worker.js pdftex-worker.js.mem
-	rm -f latex.fmt
-	rm -f pdftex.bc
-	rm -rf ${SOURCE_DIR} pdftex-1.40.11.zip
-	rm -rf binary
-	rm -rf latex_format
-	rm -rf texlive
-	rm -f install-tl-unx.tar.gz
-	rm -f texlive-files.js
+	rm -rf build
+	rm pdftex-worker.js
+	rm texlive -rf
 
 ifeq ("x","y")
 --------------------------------
