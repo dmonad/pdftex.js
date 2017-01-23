@@ -17,6 +17,7 @@
     "rollup-plugin-babel": "^2.7.1",
     "rollup-plugin-uglify": "^1.0.1",
     "rollup-watch": "^3.2.1",
+    "tag-dist-files": "^0.1.5",
     "watch": "^1.0.1"
   },
   "scripts": {
