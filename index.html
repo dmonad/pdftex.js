@@ -3,14 +3,32 @@
   <head>
     <script src="./pdftex.js"></script>
     <style>
-      textarea {
+      .demo-container {
+        margin: 20px;
         width: 100%;
-        height: 500px;
+        display: flex;
+        flex-direction: row;
+        min-height: 600px;
+      }
+      #editor {
+        width: 40%;
+        flex: 1 1 auto;
+      }
+      #log {
+        width: 40%;
+        background-color: #EEE;
+        padding: 20px;
+        flex: 1 1 auto;
       }
     </style>
   </head>
   <body>
-    <textarea>
+    <h1> pdftex.js demo <iframe src="https://ghbtns.com/github-btn.html?user=dmonad&amp;repo=pdftex.js&amp;type=star&amp;count=true" frameborder="0" scrolling="0" width="170px" height="20px" class="style-scope iron-doc-viewer"></iframe></h1>
+    <p> <a href="https://github.com/dmonad/pdftex.js">pdftex.js</a> is a pure javascript port of pdftex which allows you to compile latex directly in your browser!</p>
+    <button onclick="compile()">Compile!</button>
+    <a id="pdflink"></a>
+    <div class="demo-container">
+      <textarea id="editor" spellcheck="false">
 \documentclass[12pt]{article}
 \usepackage{amsmath}
 \usepackage{graphicx}
@@ -21,31 +39,35 @@
 \begin{document}
   \maketitle
 
-  \begin{center}
-    \includegraphics[width=0.5\textwidth]{https://assets-cdn.github.com/images/modules/logos_page/Octocat.png}
-  \end{center}
-
   \begin{align}
     E_0 &= mc^2    \\
     E &= \frac{mc^2}{\sqrt{1-\frac{v^2}{c^2}}}
   \end{align}
 \end{document}
-    </textarea>
-    <button onclick="compile()">Compile!</button>
-    <a></a>
+      </textarea>
+      <pre id="log"></pre>
+    </div>
     <script>
       function compile () {
-        var source = document.querySelector('textarea').value
+        var source = document.querySelector('#editor').value
         var compile = pdftex(source, { debug: true })
+        var pre = document.querySelector('#log')
+        pre.textContent = ''
+
         compile.on('finish', function (event) {
           if (event.success) {
-            var a = document.querySelector('a')
+            var a = document.querySelector('#pdflink')
             a.textContent = event.url
             a.setAttribute('href', event.url)
           }
+        })
+        compile.on('log', function (m) {
+          pre.textContent += m + '\n'
+        })
+        compile.on('err', function (m) {
+          pre.textContent += m + '\n'
         })
       }
     </script>
   </body>
 </html>
-
