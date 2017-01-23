@@ -71,14 +71,8 @@ export default function pdftex (source, options) {
   if (currentWorker != null) {
     currentWorker.terminate()
   }
-  if (nextWorker != null) {
-    currentWorker = nextWorker
-  } else {
-    currentWorker = new PdfTeXCompilation()
-  }
-  currentWorker.on('finish', function () {
-    nextWorker = new PdfTeXCompilation()
-  })
+  currentWorker = nextWorker
+  nextWorker = new PdfTeXCompilation()
 
   currentWorker._compile(source, options)
   return currentWorker

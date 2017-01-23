@@ -91,27 +91,21 @@ compile_lib: configure
 	-cd build/${SOURCE_DIR}/build-pdftex/texk/web2c/lib && make clean
 	-cd build/${SOURCE_DIR}/build-pdftex/texk/web2c/lib && emmake make CC=emcc CFLAGS=-DELIDE_CODE
 
-./pdftex-worker.js: compile_bc compile_lib compile_kpathsea build/texlive-files.js
-	cat build/texlive-files.js > build/tmp.js
-	cat src/pdftex-worker-pre.js >> build/tmp.js
+./pdftex-worker.js: compile_bc compile_lib compile_kpathsea ./texlive/texmf-var/web2c/pdftex/latex.fmt ./texlive
+	# cat build/texlive-files.js > build/tmp.js
+	# cat src/pdftex-worker-pre.js >> build/tmp.js
 	opt -strip-debug build/${SOURCE_DIR}/build-pdftex/texk/web2c/pdftex > build/pdftex.bc
 	OBJFILES=$$(for i in `find build/${SOURCE_DIR}/build-pdftex/texk/web2c/lib build/${SOURCE_DIR}/build-pdftex/texk/kpathsea -name '*.o'` ; do llvm-nm $$i | grep main >/dev/null || echo $$i ; done) && \
-		emcc -s INVOKE_RUN=0 --memory-init-file 1 -v --closure 0 -s TOTAL_MEMORY=67108864 -s FORCE_FILESYSTEM=1 $$OBJFILES build/pdftex.bc -o pdftex-worker.js --post-js src/pdftex-worker-post.js --pre-js build/tmp.js -O3
-	rm build/tmp.js
+		emcc -s INVOKE_RUN=0 --memory-init-file 1 -v --closure 0 -s TOTAL_MEMORY=167772160 -s FORCE_FILESYSTEM=1 $$OBJFILES build/pdftex.bc -o pdftex-worker.js --post-js src/pdftex-worker-post.js --pre-js src/pdftex-worker-pre.js -O3 --preload-file texlive/texmf.cnf@texmf.cnf --preload-file texlive/texmf-config@texmf-config --preload-file texlive/texmf-dist@texmf-dist --preload-file texlive/texmf-var@texmf-var
+	# rm build/tmp.js
 
 dist:
-	cat build/texlive-files.js > build/tmp.js
-	cat src/pdftex-worker-pre.js >> build/tmp.js
 	OBJFILES=$$(for i in `find build/${SOURCE_DIR}/build-pdftex/texk/web2c/lib build/${SOURCE_DIR}/build-pdftex/texk/kpathsea -name '*.o'` ; do llvm-nm $$i | grep main >/dev/null || echo $$i ; done) && \
-		emcc -s INVOKE_RUN=0 --memory-init-file 1 -v --closure 0 -s TOTAL_MEMORY=67108864 -s FORCE_FILESYSTEM=1 $$OBJFILES build/pdftex.bc -o pdftex-worker.js --post-js src/pdftex-worker-post.js --pre-js build/tmp.js -O3
-	rm build/tmp.js
+		emcc -s INVOKE_RUN=0 --memory-init-file 1 -v --closure 0 -s TOTAL_MEMORY=167772160 -s FORCE_FILESYSTEM=1 $$OBJFILES build/pdftex.bc -o pdftex-worker.js --post-js src/pdftex-worker-post.js --pre-js src/pdftex-worker-pre.js -O3 --preload-file texlive/texmf.cnf@texmf.cnf --preload-file texlive/texmf-config@texmf-config --preload-file texlive/texmf-dist@texmf-dist --preload-file texlive/texmf-var@texmf-var
 
 dev:
-	cat build/texlive-files.js > build/tmp.js
-	cat src/pdftex-worker-pre.js >> build/tmp.js
 	OBJFILES=$$(for i in `find build/${SOURCE_DIR}/build-pdftex/texk/web2c/lib build/${SOURCE_DIR}/build-pdftex/texk/kpathsea -name '*.o'` ; do llvm-nm $$i | grep main >/dev/null || echo $$i ; done) && \
-		emcc -s INVOKE_RUN=0 --memory-init-file 1 -v --closure 0 -s TOTAL_MEMORY=67108864 -s FORCE_FILESYSTEM=1 $$OBJFILES build/pdftex.bc -o pdftex-worker.js --post-js src/pdftex-worker-post.js --pre-js build/tmp.js # -O3
-	rm build/tmp.js
+		emcc -s INVOKE_RUN=0 --memory-init-file 1 -v --closure 0 -s TOTAL_MEMORY=167772160 -s FORCE_FILESYSTEM=1 $$OBJFILES build/pdftex.bc -o pdftex-worker.js --post-js src/pdftex-worker-post.js --pre-js src/pdftex-worker-pre.js --preload-file texlive/texmf.cnf@texmf.cnf --preload-file texlive/texmf-config@texmf-config --preload-file texlive/texmf-dist@texmf-dist --preload-file texlive/texmf-var@texmf-var # -O3
 
 clean:
 	rm -rf build

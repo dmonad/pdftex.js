@@ -5,14 +5,14 @@ All content contained in `./src/texlive/` is licensed under the [LaTeX Project P
 # Makefile
 
 The script (`./src/Makefile`) that transpiles pdftex to javascript was originally copied from https://github.com/manuels/texlive.js
-It is subject of the [GPL](https://www.gnu.org/licenses/gpl-3.0.en.html)
+It is subject to the [GPL](https://www.gnu.org/licenses/gpl-3.0.en.html)
 
 # PdfTeX
 The transpiled pdftex code, included in `./src/pdftex-worker.js(.mem)` is subject of the GPLv2 (see ./src/pdftex-1.*/COPYING).
 
 # PdfTeX.js
 
-All remaining code - this includes `./pdftex.js`, `./src/pdftex.js`, `./src/pdftex-worker-(post|pre).js` - is subject of the MIT license:
+All remaining code - this includes `./pdftex.js`, `./src/pdftex.js`, `./src/pdftex-worker-(post|pre).js` - is subject to the MIT license:
 
 The MIT License (MIT)
 

@@ -1,11 +1,11 @@
-Module = {}
-
-Module.TOTAL_MEMORY = 80 * 1024 * 1024
 Module.noInitialRun = true
 
 Module.print = function (log) { postMessage({ type: 'log', value: log }) }
 Module.printErr = function (err) { postMessage({ type: 'err', value: err }) }
 Module.calledRun = true
+// we call this in *-post.js
+preloadFiles = Module.preRun
+Module.preRun = [] // this is going to be overwritten later either way.. for consistency we do it here too
 
 function start (source, options) {
   options = options || {}
@@ -19,7 +19,7 @@ function start (source, options) {
 
   // register url files
   if (options.enableUrls) {
-    var files = source.match(/\{(https|http):\/\/.*\}/g)
+    var files = source.match(/\{(https|http):\/\/.*\}/g) || []
     files.forEach(function (f, i) {
       var url = f.slice(1,-1) // remove {}
       var dotPos = url.lastIndexOf('.')
@@ -85,6 +85,7 @@ addEventListener('message', function (event) {
 
 Module.preInit = function () {
   // Module.FS_createPath('/', '', true, true)
+  /*
   texliveFiles.forEach(function (f) {
     if (f.lastIndexOf('/.') === f.length - 2) {
       Module.FS_createPath('/', f.slice(0, f.length - 2), true, true)
@@ -94,5 +95,5 @@ Module.preInit = function () {
       var path = f.slice(0, split)
       Module.FS_createLazyFile(path, filename, '/src/texlive' + f, true, true)
     }*/
-  })
+  // })
 }

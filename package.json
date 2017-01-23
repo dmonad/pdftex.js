@@ -5,7 +5,6 @@
   "main": "src/pdftex.js",
   "files": [
     "src",
-    "texlive",
     "pdftex-worker.*",
     "pdftex.*"
   ],
@@ -22,7 +21,7 @@
   },
   "scripts": {
     "init": "source ~/utils/emsdk_portable/emsdk_env.sh && make && npm run dist-worker",
-    "watch": "concurrently -k \"watch 'make dev' src\" \"rollup -c -w\" \"http-server\"",
+    "watch": "concurrently -k \"watch 'make dev' src\" \"rollup -c -w --environment DEV\" \"http-server\"",
     "dist": "make dist && rollup -c",
     "lint": "standard",
     "postversion": "npm run lint && npm run dist",
