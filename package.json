@@ -5,7 +5,7 @@
   "main": "src/pdftex.js",
   "files": [
     "src",
-    "texlive/**",
+    "texlive",
     "pdftex-worker.*",
     "pdftex.*"
   ],
