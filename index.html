@@ -23,8 +23,21 @@
     </style>
   </head>
   <body>
-    <h1> pdftex.js demo <iframe src="https://ghbtns.com/github-btn.html?user=dmonad&amp;repo=pdftex.js&amp;type=star&amp;count=true" frameborder="0" scrolling="0" width="170px" height="20px" class="style-scope iron-doc-viewer"></iframe></h1>
-    <p> <a href="https://github.com/dmonad/pdftex.js">pdftex.js</a> is a pure javascript port of pdftex which compiles latex directly in your browser!</p>
+    <h1> pdftex.js demo
+      <iframe
+        src="https://ghbtns.com/github-btn.html?user=dmonad&amp;repo=pdftex.js&amp;type=star&amp;count=true"
+        frameborder="0"
+        scrolling="0"
+        width="170px"
+        height="20px"
+        class="style-scope iron-doc-viewer">
+      </iframe>
+    </h1>
+    <p>
+      <a href="https://github.com/dmonad/pdftex.js">pdftex.js</a>
+      is a pure javascript port of pdftex which compiles latex directly in your
+      browser!
+    </p>
     <button onclick="compile()">Compile!</button>
     <a id="pdflink"></a>
     <div class="demo-container">
@@ -48,9 +61,29 @@
       <pre id="log"></pre>
     </div>
     <script>
-      function compile () {
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker
+        .register('pdftex-service-worker.js', { scope: '/'})
+        .then(function (reg) {
+          // registration worked
+          console.log(
+            'Pdftex service worker registration succeeded. Scope is ' +
+            reg.scope
+          )
+          // optionally you can init pdftex for faster initial load
+          // make sure sw is already active. Otherwise the big
+          // pdftex-worker.data file is loaded twite!
+          if (reg.active != null) {
+            pdftex.init()
+          }
+        }).catch(function (error) {
+          // registration failed
+          console.log('Pdftex service worker registration failed with ' + error)
+        })
+      }
+      window.compile = function compile () {
         var source = document.querySelector('#editor').value
-        var compile = pdftex(source, { debug: true })
+        var compile = pdftex(source, { debug: true }) // eslint-disable-line
         var pre = document.querySelector('#log')
         pre.textContent = ''
 

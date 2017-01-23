@@ -3,7 +3,7 @@
 > browser! - [Demo](https://dmonad.github.io/pdftex.js)
 
 *pdftex.js* compiles latex code at near-native speed, and does not require a
-server. We also provide a custom service worker for caching the dependencies.
+server. *pdftex.js* ships with custom service worker for caching dependencies.
 
 ### Get Started
 
@@ -17,6 +17,37 @@ Include the main js file (also works well with module loaders)
 
 ```
 <script src="bower_components/pdftex.js/pdftex.js"></script>
+```
+
+The texlive distribution is rather big, so you should use service worker to
+cache it. *pdftex.js* ships with an optimized (it's actually not difficult)
+service worker to cache the texlive distribution. I recommend to use it event
+if you are already implemented a service worker for your project (you can run
+them in parallel).
+
+```
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker
+  .register(
+    './bower_components/pdftex.js/pdftex-service-worker.js',
+    { scope: '/bower_components/pdftex.js/' }
+  ).then(function (reg) {
+    // registration worked
+    console.log(
+      'Pdftex service worker registration succeeded. Scope is ' +
+      reg.scope
+    )
+    // optionally you can init pdftex for faster initial load
+    // make sure sw is already active. Otherwise the big
+    // pdftex-worker.data file is loaded twice!
+    if (reg.active != null) {
+      pdftex.init()
+    }
+  }).catch(function (error) {
+    // registration failed
+    console.log('Pdftex service worker registration failed with ' + error)
+  })
+}
 ```
 
 Start a process

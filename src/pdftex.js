@@ -1,3 +1,4 @@
+/* eslint-env worker */
 
 class PdfTeXCompilation {
   constructor () {
@@ -65,15 +66,21 @@ class PdfTeXCompilation {
 }
 
 var currentWorker = null
-var nextWorker = new PdfTeXCompilation()
+var nextWorker = null
 
 export default function pdftex (source, options) {
   if (currentWorker != null) {
     currentWorker.terminate()
   }
-  currentWorker = nextWorker
+  currentWorker = nextWorker || new PdfTeXCompilation() // if not initialized
   nextWorker = new PdfTeXCompilation()
 
   currentWorker._compile(source, options)
   return currentWorker
+}
+
+pdftex.init = function pdftexInit () {
+  if (nextWorker == null) {
+    nextWorker = new PdfTeXCompilation()
+  }
 }
