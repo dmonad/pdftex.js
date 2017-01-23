@@ -40,7 +40,7 @@ class PdfTeXCompilation {
     })
   }
   // notifies event listeners
-  _fire(event, data) {
+  _fire (event, data) {
     this._eventListener.forEach(l => {
       if (l[0] === event) {
         l[1](data)
