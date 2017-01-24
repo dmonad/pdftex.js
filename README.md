@@ -19,6 +19,13 @@ Include the main js file (also works well with module loaders)
 <script src="bower_components/pdftex.js/pdftex.js"></script>
 ```
 
+In order to locate the pdftex-worker you must set the location of the pdftex.js
+directory.
+
+```
+pdftex.setPdftexDir('/bower_components/pdftex.js/')
+```
+
 The texlive distribution is rather big, so you should use service worker to
 cache it. *pdftex.js* ships with an optimized (it's actually not difficult)
 service worker to cache the texlive distribution. I recommend to use it event
@@ -37,11 +44,11 @@ if ('serviceWorker' in navigator) {
       'Pdftex service worker registration succeeded. Scope is ' +
       reg.scope
     )
-    // optionally you can init pdftex for faster initial load
-    // make sure sw is already active. Otherwise the big
-    // pdftex-worker.data file is loaded twice!
+    // Optionally you can preload the worker and the resources for a faster
+    // initial compilation. You should only do that if the service worker is
+    // activated
     if (reg.active != null) {
-      pdftex.init()
+      pdftex.preload()
     }
   }).catch(function (error) {
     // registration failed
@@ -87,6 +94,13 @@ This is returned when calling `pdftex(latexSource)`. Has the following methods:
   * **'log'**
   * **'err'**
   * **'finish'** - Called when the compilation ends (succes or failure)
+
+##### pdftex.preload()
+Preload the worker and the resources for a faster initial compilation.
+
+##### pdftex.setPdftexDir(dir : String)
+Set the path to the *pdftex.js* directory. This is required in order to
+determine the location of the pdftex-worker.
 
 ### Contribution
 This project wouldn't be possible without [emscripten]

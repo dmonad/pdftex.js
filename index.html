@@ -61,6 +61,7 @@
       <pre id="log"></pre>
     </div>
     <script>
+      pdftex.setPdftexDir('./')
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker
         .register('pdftex-service-worker.js')
@@ -70,11 +71,11 @@
             'Pdftex service worker registration succeeded. Scope is ' +
             reg.scope
           )
-          // optionally you can init pdftex for faster initial load
-          // make sure sw is already active. Otherwise the big
-          // pdftex-worker.data file is loaded twite!
+          // Optionally you can preload the worker and the resources for a
+          // fasterinitial compilation. You should only do that if the service
+          // worker is activated
           if (reg.active != null) {
-            pdftex.init()
+            pdftex.preload()
           }
         }).catch(function (error) {
           // registration failed

@@ -3,7 +3,7 @@
 class PdfTeXCompilation {
   constructor () {
     this._ready = false
-    this.worker = new Worker('pdftex-worker.js')
+    this.worker = new Worker(pdftex._dir + 'pdftex-worker.js')
     this.ready = false
     var self = this
 
@@ -90,8 +90,19 @@ export default function pdftex (source, options) {
   return currentWorker
 }
 
-pdftex.init = function pdftexInit () {
+pdftex.preload = function pdftexPreoad () {
   if (nextWorker == null) {
     nextWorker = new PdfTeXCompilation()
   }
+}
+
+pdftex._dir = './'
+pdftex.setPdftexDir = function setPdftexDir (dir) {
+  if (typeof dir !== 'string') {
+    throw new Error('Expect path to be a String!')
+  }
+  if (dir[dir.length - 1] !== '/') {
+    dir += '/'
+  }
+  pdftex._dir = dir
 }

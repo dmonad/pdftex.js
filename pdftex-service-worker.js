@@ -1,9 +1,8 @@
 /* eslint-env serviceworker, worker */
 
-var currentVersion = 'v0.0.9'
+var currentVersion = 'v0.0.10'
 
 this.addEventListener('install', function (event) {
-  console.log('sw: install')
   event.waitUntil(
     caches.open(currentVersion)
     .then(function (cache) {
@@ -21,7 +20,6 @@ this.addEventListener('install', function (event) {
 })
 
 this.addEventListener('fetch', function (event) {
-  console.log('sw: fetch', event.request.url, event)
   event.respondWith(
     caches.match(event.request).then(function (response) {
       return response || fetch(event.request).then(function (response) {
@@ -35,7 +33,6 @@ this.addEventListener('fetch', function (event) {
 })
 
 this.addEventListener('activate', function (event) {
-  console.log('sw: activate')
   event.waitUntil(
     caches.keys()
     .then(function (keyList) {
