@@ -1,17 +1,21 @@
 /* eslint-env serviceworker, worker */
 
-var currentVersion = 'v0.0.8'
+var currentVersion = 'v0.0.9'
 
 this.addEventListener('install', function (event) {
   console.log('sw: install')
   event.waitUntil(
-    caches.open(currentVersion).then(function (cache) {
+    caches.open(currentVersion)
+    .then(function (cache) {
       return cache.addAll([
         'pdftex-worker.data',
         'pdftex-worker.js',
         'pdftex-worker.js.mem',
         'pdftex.js'
       ])
+    })
+    .then(function () {
+      return self.skipWaiting()
     })
   )
 })
@@ -33,12 +37,15 @@ this.addEventListener('fetch', function (event) {
 this.addEventListener('activate', function (event) {
   console.log('sw: activate')
   event.waitUntil(
-    caches.keys().then(function (keyList) {
+    caches.keys()
+    .then(function (keyList) {
       return Promise.all(keyList.map(function (key) {
         if (key !== currentVersion) {
           return caches.delete(key)
         }
       }))
+    }).then(function () {
+      return self.clients.claim()
     })
   )
 })

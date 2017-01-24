@@ -3,7 +3,7 @@
 class PdfTeXCompilation {
   constructor () {
     this._ready = false
-    this.worker = new Worker('./pdftex-worker.js')
+    this.worker = new Worker('pdftex-worker.js')
     this.ready = false
     var self = this
 
@@ -72,8 +72,19 @@ export default function pdftex (source, options) {
   if (currentWorker != null) {
     currentWorker.terminate()
   }
-  currentWorker = nextWorker || new PdfTeXCompilation() // if not initialized
-  nextWorker = new PdfTeXCompilation()
+  if (nextWorker == null) {
+    currentWorker = new PdfTeXCompilation()
+  } else {
+    currentWorker = nextWorker
+    nextWorker = null
+  }
+
+  currentWorker.on('finish', function () {
+    if (nextWorker == null) {
+      // preload when finishid
+      nextWorker = new PdfTeXCompilation()
+    }
+  })
 
   currentWorker._compile(source, options)
   return currentWorker

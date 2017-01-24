@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <script src="./pdftex.js"></script>
+    <script src="pdftex.js"></script>
     <style>
       .demo-container {
         margin: 20px;
@@ -63,7 +63,7 @@
     <script>
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker
-        .register('pdftex-service-worker.js', { scope: '/'})
+        .register('pdftex-service-worker.js')
         .then(function (reg) {
           // registration worked
           console.log(
